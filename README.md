@@ -46,7 +46,7 @@
 **Requirements:** Node.js **24 recommended** (or **22.13+**), npm, and a Discord application token. A system font such as DejaVu Sans is needed for PNG generation.
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/nihitdev/archnemesis-bot
 cd archnemesis-bot
 npm ci
 npm run setup

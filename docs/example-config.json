@@ -1,0 +1,10 @@
+{
+  "levelsEnabled": true,
+  "levelChannel": null,
+  "modLogChannel": null,
+  "setupRoleId": null,
+  "roleColor": 5793266,
+  "disabledModules": ["audio"],
+  "active": true,
+  "setupWarning": null
+}

@@ -1,0 +1,11 @@
+# Optional: build once, run without compiling or installing packages at startup.
+services:
+  bot:
+    build: .
+    env_file: .env
+    volumes:
+      - bot-data:/app/data
+    restart: unless-stopped
+    stop_grace_period: 60s
+volumes:
+  bot-data:

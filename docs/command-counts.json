@@ -1,0 +1,24 @@
+{
+  "registered": 342,
+  "groups": 36,
+  "counted": 325,
+  "excluded": [
+    "economy/help",
+    "fun/coinflip",
+    "fun/dice",
+    "fun/choose",
+    "fun/highlow",
+    "games/coin",
+    "games/dice",
+    "games/reaction",
+    "images/globalavatar",
+    "leveling/help",
+    "music/tap",
+    "music/help",
+    "suggestions/compose",
+    "text/mock",
+    "utility/help",
+    "utility/about",
+    "utility/server"
+  ]
+}

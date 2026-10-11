@@ -4,7 +4,7 @@
  * Safe to run from site/, requires no dependencies, never modifies bot sources.
  * When docs are unavailable, retains the included documented-command preview.
  */
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,6 +89,7 @@ if (commands.size < 8) {
   process.exit(0);
 }
 const entries = [...commands.values()].sort((a,b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+await mkdir(dirname(output), { recursive: true });
 await writeFile(output, JSON.stringify({ source: 'docs/COMMANDS.md', generatedAt: new Date().toISOString(), commands: entries }, null, 2) + '\n');
 console.log(`[commands] Synced ${entries.length} documented command paths from ../docs/COMMANDS.md.`);
 console.log('[commands] This index is derived from documentation; counts and live API behavior are verified separately.');

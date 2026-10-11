@@ -1,123 +1,220 @@
-# ARCHNEMESIS BOT
+<div align="center">
 
-A self-hosted TypeScript / discord.js bot with guild-isolated SQLite storage. Existing modular commands are preserved; community, administration, setup and persistence features live in the same `src/` architecture. No PostgreSQL, Redis, paid API, or external service is required.
+# ⚔️ ARCHNEMESIS BOT
 
-**342 registered slash actions in 36 groups; 325 counted after excluding declared aliases and informational-only actions.** See the generated [command reference](docs/COMMANDS.md) and [count manifest](docs/command-counts.json). Every registered handler has a mocked dispatch/acknowledgement test. This is not a claim that every Discord API operation has been verified live. See [verification and operational limits](docs/VERIFICATION.md).
+### YOUR SERVER. YOUR RULES. YOUR NEMESIS.
 
-## Run locally
+**A modular, self-hosted Discord bot built for control, community, and freedom.**
 
-Use Node.js 24 (recommended), or Node.js 22.13 or later, and npm. Older Node 22 versions may print a warning for built-in `node:sqlite`. PNG generation requires a system font; DejaVu Sans is a suitable choice.
+[![License: AGPL-3.0-only](https://img.shields.io/badge/License-AGPL--3.0--only-E11D48?style=for-the-badge&logo=gnu&logoColor=white)](LICENSE)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24_LTS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Discord.js](https://img.shields.io/badge/discord.js-v14-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-Local-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-```sh
-npm install
+<br />
+
+**325 counted actions** · **342 registered actions** · **36 command groups**
+
+[**🚀 Quick Start**](#-quick-start) · [**✨ Features**](#-features) · [**📚 Commands**](docs/COMMANDS.md) · [**🛡️ Permissions**](docs/PERMISSIONS.md) · [**🔍 Verification**](docs/VERIFICATION.md)
+
+<br />
+
+> No Redis. No PostgreSQL. No paid APIs. No unnecessary infrastructure.
+
+</div>
+
+---
+
+## ✨ Features
+
+|     | Module                | What it does                                                                        |
+| :-: | --------------------- | ----------------------------------------------------------------------------------- |
+| 🛡️  | **Moderation**        | Bans, kicks, timeouts, warnings, cleanup, role and nickname tools, persistent cases |
+| ⚙️  | **Server management** | Guided setup, diagnostics, module toggles, configuration export and deletion        |
+| 🪙  | **Economy & XP**      | Virtual balances, daily rewards, transfers, inventory and leaderboards              |
+| 🗳️  | **Community**         | Polls, giveaways, suggestions, RSVPs, tags, notes, tasks and tickets                |
+| 🎭  | **Engagement**        | Reaction roles, optional welcome messages, starboards and logs                      |
+| ⏰  | **Reminders**         | Persistent scheduling, retries, rescheduling and failed-job inspection              |
+| 🎮  | **Fun & media**       | Games, text tools, avatars, local meme and quote-card rendering                     |
+| 🎵  | **Optional audio**    | Local Ogg Opus playback with per-guild queues; no external streaming                |
+
+> **Count transparency:** 342 registered slash actions across 36 groups; 325 counted after excluding declared aliases and informational-only entries. Counts are tracked in [`docs/command-counts.json`](docs/command-counts.json). Mocked handler tests do **not** imply all Discord API operations are live-verified. Read the [verification report](docs/VERIFICATION.md).
+
+## 🚀 Quick Start
+
+**Requirements:** Node.js **24 recommended** (or **22.13+**), npm, and a Discord application token. A system font such as DejaVu Sans is needed for PNG generation.
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd archnemesis-bot
+npm ci
 npm run setup
 npm run build
 npm start
 ```
 
-The setup wizard requests a bot token, an optional development guild ID, and an optional operator user ID. **A guild ID is not required.** Token input is hidden, `.env` is written with restrictive permissions, and an existing `.env` is preserved unless you explicitly choose to overwrite it. No configuration backups are created.
+The interactive setup wizard requests a **bot token**, an optional development guild ID, and an optional operator user ID. A guild ID is **not required**. Token input is hidden; `.env` is written with restrictive permissions, and existing `.env` files are preserved unless you explicitly approve replacement.
 
-```sh
-npm run dev          # TypeScript watch mode
-npm run typecheck    # Strict TypeScript checks
-npm run lint         # ESLint
-npm test             # Mocked handlers, integration workflows and security tests
-npm run build        # Compile src into dist
-npm start            # Run compiled application
-npm run list         # List registered slash actions
-npm run reference    # Regenerate command docs and count manifest
-npm run format       # Format source, scripts and tests
+<details>
+<summary><strong>🧰 Developer commands</strong></summary>
+
+```bash
+npm run dev         # TypeScript watch mode
+npm run typecheck   # Strict TypeScript validation
+npm run lint        # ESLint
+npm test            # Mocked handler, workflow and security tests
+npm run build       # Compile TypeScript into dist/
+npm start           # Run compiled bot
+npm run list        # List registered actions
+npm run reference   # Regenerate command docs and count manifest
+npm run format      # Format project files
 ```
 
-`npm run check` remains an alias for the existing TypeScript check. Build again after source changes before using `npm start`.
+`npm run check` is also available. Rebuild after source changes before running `npm start`.
 
-## Public installation
+</details>
 
-1. Create an application in the [Discord Developer Portal](https://discord.com/developers/applications). Create its bot and copy its token into the setup wizard.
-2. Enable public installation for the application and configure **Guild Install** with `bot` and `applications.commands` scopes. The bot implements server installation, not personal/user installation.
-3. Use this URL, replacing `APPLICATION_ID` with your application ID:
+## 🤖 Install on Discord
+
+1. Create a bot in the [Discord Developer Portal](https://discord.com/developers/applications) and configure **Guild Install** with `bot` and `applications.commands` scopes.
+2. Use the following link, replacing `APPLICATION_ID` with your application's ID:
 
    ```text
    https://discord.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot%20applications.commands&permissions=84992
    ```
 
-   Baseline permissions: View Channel, Send Messages, Embed Links, Read Message History. Administrator is not requested. `/utility invite` builds the same link automatically.
-4. Start the bot. Commands are registered globally on every startup. Global propagation is controlled by Discord. `DEV_GUILD_ID` additionally registers a development guild copy without disabling global registration. Legacy `GUILD_ID` is ignored; remove it at your convenience.
-5. In the server, run `/setup wizard`, then `/diagnose check`. Use `/setup module` to disable features individually. Commands restricted to staff still enforce permissions at runtime even when Discord displays their parent group to everyone.
+3. Start the bot and allow time for global slash commands to propagate.
+4. Run **`/setup wizard`**, then **`/diagnose check`**. Use **`/setup module`** to enable or disable modules.
 
-No privileged intents are enabled by default. Guilds, Guild Messages and Guild Message Reactions support configuration, XP and reaction features. Message text is not needed for XP. Discord-native AutoMod does not require Message Content intent.
+The baseline invite requests View Channel, Send Messages, Embed Links, and Read Message History — **not Administrator**. The `/utility invite` command can generate an installation link. Commands register globally on startup; `DEV_GUILD_ID` additionally registers a development-guild copy. Legacy `GUILD_ID` is ignored.
 
-## Setup role and permissions
+### 🔐 Permissions without surprises
 
-On startup and guild join, the bot persists independent guild settings. If it has Manage Roles, it creates or reuses **ARCHNEMESIS BOT**, a non-mentionable, zero-permission role. It assigns the role only below its integration role. Existing role names, colors and permissions are never overwritten. Existing roles with permission flags or channel grants are not automatically assigned. Multiple same-name roles produce a warning instead of another duplicate.
+On startup or server join, ARCHNEMESIS stores isolated server settings. If permitted, it creates or reuses a **non-mentionable, zero-permission `ARCHNEMESIS BOT` role**, assigning it only when the Discord role hierarchy allows. It does not overwrite existing role colors or permissions. Ambiguous same-name roles and missing permissions produce warnings visible through `/setup permissions` and `/diagnose check`.
 
-`/setup color` configures the color used for future role creation; it intentionally does not repaint an existing customized role. Missing permissions produce persisted setup warnings visible through `/setup permissions` and `/diagnose check`.
+Staff commands enforce authorization at runtime. Read [permission troubleshooting](docs/PERMISSIONS.md) for moderation, hierarchy, channel overrides, AutoMod, tickets and audio.
 
-See [permission troubleshooting](docs/PERMISSIONS.md) for moderation, role hierarchy, channel overwrites, AutoMod, tickets, reactions and optional audio. Local configuration, XP and warning storage do not require the bot to hold the staff member's Manage Server or Moderate Members permission.
+## 🧠 Built for self-hosting
 
-## Features
+```text
+Discord Gateway
+      │
+      ▼
+  discord.js
+      │
+      ▼
+Interaction router ──► Guards & permissions
+      │
+      ├──► Modular command groups
+      ├──► Community services
+      ├──► Reminder scheduler
+      └──► SQLite (guild-isolated data)
+```
 
-- Moderation: bans, kicks, timeouts, warnings, message cleanup, role/nickname operations, persistent cases and annotations. Caller and bot permissions and target hierarchy are checked.
-- Guild administration: role/channel tools, module controls, safe setup, configuration exports and explicit server-owner data deletion.
-- Economy/XP: virtual balances, atomic transfers, daily/work rewards, cosmetic inventory, XP and leaderboards. Coins have no monetary value.
-- Community: persistent polls, giveaways, event RSVPs, suggestions with voting buttons and submission modals, tags with autocomplete, private notes/tasks/bookmarks, private ticket channels.
-- Engagement: reaction roles limited to approved cosmetic roles, optional welcome messages, link-only starboards and lifecycle logs.
-- Scheduling: persistent reminders with retry/backoff, failed-job inspection, editing and rescheduling.
-- Entertainment: existing games, text utilities, music calculations, avatars, locally rendered PNG memes and quote cards.
-- Optional local voice playback: guild-specific queues of operator-provided Ogg Opus files; no scraping or streaming from YouTube/Spotify.
+- **SQLite by default:** `data/bot.sqlite`; override with `DATABASE_PATH`.
+- **Durable state:** WAL, migrations, indexed guild keys, transactional transfers and inventory gifts.
+- **Local-first:** No Redis, PostgreSQL, paid APIs or external database server.
+- **Single process:** Run one bot process per token/database; distributed job leasing is not implemented.
+- **Graceful shutdown:** Active handlers and jobs are drained before SQLite closes.
 
-Polls and giveaways support up to 1,000 ballots/entrants per activity. Notes, tasks, bookmarks, suggestions, polls, events and giveaways are capped at 100 records per creator per guild. Listings and exports show bounded recent records. Giveaways require an explicit host `/giveaways draw` after their entry window; events are bot-local RSVP records, not Discord Scheduled Events. Acknowledgement tests include both successful and handled-error paths.
+<details>
+<summary><strong>🗄️ Data retention, migration and backups</strong></summary>
 
-## Optional member events and audio
+On first use, legacy `bot.json` and `reminders.json` beside the SQLite file are imported once; the originals are not modified or deleted. Leaving a guild marks its settings inactive but retains records. A server owner can explicitly remove guild-local records using `/config deleteguild confirm:<guild-id>`; this does not remove Discord messages, roles or channels.
 
-Welcome messages require both **Server Members Intent** in the Developer Portal and `ENABLE_MEMBER_EVENTS=true`, followed by a restart. Set a greeting channel and template with `/welcome channel` and `/welcome template`, then `/welcome enable`. The default remains disabled.
+For a consistent backup, stop the bot before copying the database, or use SQLite's online backup facilities. WAL files matter when copying a live database. Never publicly expose `.env`, SQLite data, logs or audio files. Operators with filesystem access can inspect stored records.
 
-For audio, set `ENABLE_AUDIO=true`. Put `.ogg` files containing **Opus audio** in `media/`, or set `AUDIO_DIRECTORY`. Files must be ordinary local files, at most 100 MiB; symlinks and path traversal are rejected. `/audio library` lists files; `/audio play` queues one. Controls require joining the bot's voice channel. Connect and Speak permissions are checked there. This enables the non-privileged Guild Voice States intent. Tracks and the queue are intentionally ephemeral; persistent bot data remains in SQLite.
+Reminder delivery is **at least once**: a crash during acknowledgement can cause duplicate delivery. After eight failures, a reminder is retained for `/reminders failed` and `/reminders retry`.
 
-An example conversion on an operator machine with FFmpeg installed:
+</details>
 
-```sh
+<details>
+<summary><strong>🎵 Optional voice playback</strong></summary>
+
+Set `ENABLE_AUDIO=true` and put **Ogg Opus** files in `media/`, or set `AUDIO_DIRECTORY`. Files are limited to 100 MiB; symlinks and path traversal are rejected. `/audio library` lists tracks; `/audio play` queues one. Voice Connect/Speak permissions are required. The queue is ephemeral, and audio is **local only** — no YouTube or Spotify scraping.
+
+```bash
 ffmpeg -i input.wav -c:a libopus -ar 48000 media/track.ogg
 ```
 
-Use audio you have permission to play. The voice library includes DAVE support; actual voice transport, host UDP reachability, and codec compatibility require live verification. No remote URL fetching is accepted by the audio player.
+Use audio you have permission to play. Real voice transport, host UDP connectivity and codec compatibility still require live verification.
 
-## Persistence and upgrades
+</details>
 
-The default database is `data/bot.sqlite` (`DATABASE_PATH` overrides it). SQLite uses WAL, a busy timeout, schema migration markers, composite guild keys and indexes. Financial transfers and inventory gifts are atomic transactions. Private notes and bookmarks are scoped to both member and guild; bot operators with filesystem access can still inspect the database.
+<details>
+<summary><strong>👋 Optional member welcome events</strong></summary>
 
-On first use, a legacy `bot.json` and `reminders.json` beside the SQLite file are imported once. **Original JSON files are not changed or deleted.** The application never copies `.env` or other configuration files as backups. Existing data in the checked-out repository has not been migrated by the test suite; normal startup performs the import.
+Enable **Server Members Intent** in the Discord Developer Portal, set `ENABLE_MEMBER_EVENTS=true`, and restart. Configure `/welcome channel`, `/welcome template`, then `/welcome enable`. The feature is disabled by default. Other privileged intents are not enabled by default; XP does not require message content.
 
-Run one bot process per token/database. This deployment does not implement distributed job leases. Reminder delivery is at least once: a crash after Discord accepts a message but before its database acknowledgement may cause a duplicate on restart. After eight failed deliveries, a reminder is retained as failed for `/reminders failed` and `/reminders retry`.
+</details>
 
-Leaving a guild marks its settings inactive and stops delivery there; records are retained. The server owner can explicitly remove that guild's local data using `/config deleteguild confirm:<guild-id>`. This does not delete Discord roles, channels, or messages. New activity will create fresh records.
+<details>
+<summary><strong>📏 Operational limits</strong></summary>
 
-For a consistent operator backup, stop the process before copying SQLite data, or use SQLite's online backup tooling. When moving a running database, its WAL files matter. Do not expose the database, `.env`, audio library, or logs through a public web server.
+Polls and giveaways support up to 1,000 ballots/entrants per activity. Notes, tasks, bookmarks, suggestions, polls, events and giveaways are limited to 100 records per creator per guild. Giveaways require a host to run `/giveaways draw`; bot event RSVPs are not native Discord Scheduled Events. Listings and exports are bounded.
 
-## Deployment
+</details>
 
-A small Linux host with Node.js, a persistent writable data directory, a font package and outbound Discord connectivity is sufficient. Run the built process under systemd or another supervisor with a non-root user, working directory set to this repository, and graceful SIGTERM shutdown. The process drains active handlers and jobs before closing SQLite.
+## 🖥️ Deployment
 
-Optional Docker:
+A small Linux host with Node.js, a writable persistent data directory, a font package and outbound Discord access is enough. **systemd** is recommended for a lightweight Ubuntu VPS; run as a non-root user with graceful shutdown enabled.
 
-```sh
+<details>
+<summary><strong>🐳 Optional Docker deployment</strong></summary>
+
+```bash
 docker compose up --build -d
 ```
 
-The image compiles in a build stage, installs DejaVu fonts and runs as the `node` user. The Compose volume persists SQLite data. For existing local JSON data, perform and verify migration locally before switching storage, or deliberately copy the originals into the volume. Docker is not required and was not executed in this environment. Mount an audio directory separately if enabling audio.
+The image builds in stages, installs DejaVu fonts, and runs as the `node` user. Compose persists SQLite data via a volume. Migrate and verify any existing JSON data before switching storage. Docker has **not** been verified live in the supplied report. Mount an audio directory separately if needed.
 
-## Development and architecture
+</details>
 
-- `src/commands/`: existing groups plus typed action registries; permissions and compatibility aliases in `policies.ts`.
-- `src/services/interactions.ts`: command/component routing, acknowledgement, module checks and error handling.
-- `src/middleware/guard.ts`: permissions, role hierarchy, per-action cooldowns and bounded burst limits.
-- `src/database/store.ts`: SQLite schema/imports, transactions and guild-scoped records.
-- `src/services/`: guild setup, Discord registration, media, logging and community event handlers.
-- `src/jobs/reminders.ts`: durable retrying delivery and shutdown coordination.
-- `tests/`: credentials-free mocks plus stateful workflow and security checks.
+## 🧪 Quality & verification
 
-Never add aliases, help text or unsupported handlers merely to increase the count. Run `npm run reference` when changing declarations. Native Discord API mutations are not blindly retried; discord.js handles rate limiting and transient REST retries, and persistent jobs apply their own bounded retry policy.
+The project includes mocked dispatch and acknowledgement tests for every registered handler, plus workflow and security tests. **Typecheck, lint and production build were reported passing** in the supplied verification summary. Live Discord behavior should be tested separately, especially moderation mutations, permissions, command propagation, and optional voice.
 
-## License
+```bash
+npm run typecheck && npm run lint && npm test && npm run build
+```
 
-Licensed under **GNU Affero General Public License version 3.0 only** (`AGPL-3.0-only`). The unmodified official text downloaded from [GNU](https://www.gnu.org/licenses/agpl-3.0.txt) is included in [LICENSE](LICENSE). Third-party dependencies retain their respective licenses.
+**Read the honest test matrix:** [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
+## 🧩 Project structure
+
+```text
+src/
+├── commands/              # Modular actions and policies
+├── middleware/guard.ts    # Permission and cooldown enforcement
+├── services/              # Interactions, guild setup and events
+├── database/store.ts      # SQLite and migrations
+└── jobs/reminders.ts      # Persistent reminder delivery
+tests/                     # Mocked and workflow tests
+docs/                      # Command and operations reference
+```
+
+Contributions should add **real, supported functionality**, not aliases or placeholder actions to inflate command counts. Run `npm run reference` after changing command declarations.
+
+## 📚 Documentation
+
+| Guide                                              | Description                            |
+| -------------------------------------------------- | -------------------------------------- |
+| [Command reference](docs/COMMANDS.md)              | All declared slash actions             |
+| [Command count manifest](docs/command-counts.json) | Auditable action totals                |
+| [Permission guide](docs/PERMISSIONS.md)            | Role hierarchy and feature permissions |
+| [Verification report](docs/VERIFICATION.md)        | What is tested vs. unverified          |
+
+## ⚖️ License
+
+**GNU Affero General Public License v3.0 only — `AGPL-3.0-only`.** See [LICENSE](LICENSE). Third-party dependencies retain their respective licenses.
+
+---
+
+<div align="center">
+
+### ⚔️ YOUR SERVER. YOUR RULES. YOUR NEMESIS.
+
+**Built with TypeScript. Powered by open source.**
+
+</div>
